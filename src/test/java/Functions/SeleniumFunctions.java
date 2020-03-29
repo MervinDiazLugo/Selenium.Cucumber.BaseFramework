@@ -90,7 +90,7 @@ public class SeleniumFunctions {
 
         log.info("Attaching Screenshot");
         byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-        Allure.addAttachment("Screenshot", String.valueOf(screenshot));
+        Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)));
         return screenshot;
 
     }
