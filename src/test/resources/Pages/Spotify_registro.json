@@ -46,7 +46,7 @@
 
   "text":{
     "GetFieldBy": "xpath",
-    "ValueToFind": "//*[contains(text(), '{}')]"
+    "ValueToFind": "//*[contains(text(), '{0}')]"
   }
 
 }

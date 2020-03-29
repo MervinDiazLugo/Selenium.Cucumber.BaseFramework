@@ -7,10 +7,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -26,6 +25,8 @@ public class SeleniumFunctions {
     public SeleniumFunctions() {
         driver = Hooks.driver;
     }
+
+    public static final int EXPLICIT_TIMEOUT = 5;
 
     /******** Scenario Attributes ********/
     Scenario scenario = null;
@@ -93,6 +94,45 @@ public class SeleniumFunctions {
         Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)));
         return screenshot;
 
+    }
+
+    public boolean isElementDisplayed(String element) throws Exception {
+        boolean isDisplayed = Boolean.parseBoolean(null);
+        try {
+            By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+            log.info(String.format("Waiting Element: %s", element));
+            WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+            isDisplayed = wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement)).isDisplayed();
+        }catch (NoSuchElementException | TimeoutException e){
+            isDisplayed = false;
+            log.info(e);
+        }
+        log.info(String.format("%s visibility is: %s", element, isDisplayed));
+        return isDisplayed;
+    }
+
+    public void AcceptAlert()
+    {
+        try{
+            WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.accept();
+            log.info("The alert was accepted successfully.");
+        }catch(Throwable e){
+            log.error("Error came while waiting for the alert popup. "+e.getMessage());
+        }
+    }
+
+    public void dismissAlert()
+    {
+        try{
+            WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            alert.dismiss();
+            log.info("The alert was dismissed successfully.");
+        }catch(Throwable e){
+            log.error("Error came while waiting for the alert popup. "+e.getMessage());
+        }
     }
 
     public static By getCompleteElement(String element) throws Exception {

@@ -7,8 +7,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -20,7 +19,7 @@ public class StepDefinitions {
     WebDriver driver;
     SeleniumFunctions functions = new SeleniumFunctions();
 
-    public static final int EXPLICIT_TIMEOUT = 15;
+    public static final int EXPLICIT_TIMEOUT = 5;
 
     public String ElementText = "";
 
@@ -46,7 +45,7 @@ public class StepDefinitions {
     }
 
     @Given("^I navigate to (.*)")
-    public void navigateTo(String url) throws InterruptedException {
+    public void navigateTo(String url){
 
         log.info("Navigate to: " + url);
         driver.get(url);
@@ -90,7 +89,7 @@ public class StepDefinitions {
     }
 
     /** Assert Text is present be present*/
-    @Then("^Assert if (.*) contains text (.*)$")
+    @Then("^Assert if (.*?) contains text (.*?)$")
     public void checkPartialTextElementPresent(String element,String text) throws Exception {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
         WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
@@ -104,20 +103,22 @@ public class StepDefinitions {
 
     }
 
-    @Then("^Element (.*) NOT contains text (.*)$")
+    @Then("^Check if (.*?) NOT contains text (.*?)$")
     public void checkPartialTextElementNotPresent(String element,String text) throws Exception {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
         WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
         wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
-        log.info(String.format("Esperando el elemento: %s", element));
+
+        log.info(String.format("Waiting Element: %s", element));
         ElementText = driver.findElement(SeleniumElement).getText();
+
         boolean isFoundFalse = ElementText.indexOf(text) !=-1? true: false;
         Assert.assertFalse("Text is present in element: " + element, isFoundFalse);
 
     }
 
 
-    @Then("^I take screenshot: (.*)")
+    @And("^I take screenshot: (.*)")
     public void takeScreenshot(String TestCaptura) throws IOException
     {
         functions.ScreenShot(TestCaptura);
@@ -130,4 +131,37 @@ public class StepDefinitions {
         functions.attachScreenShot();
 
     }
+
+    /** Assert if element is present*/
+    @Then("^Assert if (.*?) is Displayed$")
+    public void checkIfElementIsPresent(String element) throws Exception {
+
+        boolean isDisplayed = functions.isElementDisplayed(element);
+        Assert.assertTrue("Element is not present: " + element, isDisplayed);
+
+    }
+
+    /** Assert if element is present*/
+    @Then("^Check if (.*?) NOT is Displayed$")
+    public void checkIfElementIsNotPresent(String element) throws Exception {
+
+        boolean isDisplayed = functions.isElementDisplayed(element);
+        Assert.assertFalse("Element is present: " + element, isDisplayed);
+    }
+
+    /** Handle and accept a JavaScript alert */
+    @Then("^I accept alert$")
+    public void AcceptAlert()
+    {
+        functions.AcceptAlert();
+    }
+
+    /** Handle and dismiss a JavaScript alert */
+    @Then("^I dismiss alert$")
+    public void dismissAlert()
+    {
+        functions.dismissAlert();
+    }
+
+
 }
