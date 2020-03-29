@@ -1,11 +1,17 @@
 package StepDefinitions;
+
 import Functions.SeleniumFunctions;
+import cucumber.api.Scenario;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -14,11 +20,21 @@ public class StepDefinitions {
     WebDriver driver;
     SeleniumFunctions functions = new SeleniumFunctions();
 
+    public static final int EXPLICIT_TIMEOUT = 15;
+
+    public String ElementText = "";
+
     /******** Log Attribute ********/
     Logger log = Logger.getLogger(StepDefinitions.class);
 
     public StepDefinitions() {
         driver = Hooks.driver;
+    }
+
+    /******** Scenario Attributes ********/
+    Scenario scenario = null;
+    public void scenario (Scenario scenario) {
+        this.scenario = scenario;
     }
 
     @Given("^I am in App main site")
@@ -57,6 +73,15 @@ public class StepDefinitions {
 
     }
 
+    @And("^I double click on element having (.*)")
+    public void doubleClick(String element) throws Exception
+    {
+        Actions action = new Actions(driver);
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        action.moveToElement(driver.findElement(SeleniumElement)).doubleClick().perform();
+        log.info("Double click on element: " + element);
+    }
+
     @And("^I set element (.*) with text (.*)")
     public void iSetElementEmailWithTextMytext(String element, String text) throws Exception {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
@@ -64,10 +89,45 @@ public class StepDefinitions {
         log.info(String.format("Set on element %s with text %s", element, text));
     }
 
+    /** Assert Text is present be present*/
+    @Then("^Assert if (.*) contains text (.*)$")
+    public void checkPartialTextElementPresent(String element,String text) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+        wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
+        log.info(String.format("Esperando el elemento: %s", element));
+
+        ElementText = driver.findElement(SeleniumElement).getText();
+        boolean isFound = ElementText.indexOf(text) !=-1? true: false;
+
+        Assert.assertTrue("Text is not present in element: " + element, isFound);
+
+    }
+
+    @Then("^Element (.*) NOT contains text (.*)$")
+    public void checkPartialTextElementNotPresent(String element,String text) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+        wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
+        log.info(String.format("Esperando el elemento: %s", element));
+        ElementText = driver.findElement(SeleniumElement).getText();
+        boolean isFoundFalse = ElementText.indexOf(text) !=-1? true: false;
+        Assert.assertFalse("Text is present in element: " + element, isFoundFalse);
+
+    }
+
+
     @Then("^I take screenshot: (.*)")
     public void takeScreenshot(String TestCaptura) throws IOException
     {
         functions.ScreenShot(TestCaptura);
     }
 
+
+    @And("I attach a Screenshot to Report")
+    public void AttachAScreenshotToReport() {
+
+        functions.attachScreenShot();
+
+    }
 }

@@ -45,7 +45,7 @@ public class Hooks {
 	     * Embed a screenshot in test report if test is marked as failed
 	     */
 	    public void embedScreenshot(Scenario scenario) throws IOException {
-	       
+
 	        if(scenario.isFailed()) {
 		        try {
 		        	scenario.write("The scenario failed.");
@@ -55,7 +55,7 @@ public class Hooks {
 					//functions.ScreenShot(scenario.getName());
 		        } catch (WebDriverException somePlatformsDontSupportScreenshots) {
 		            System.err.println(somePlatformsDontSupportScreenshots.getMessage());
-		        }	        
+		        }
 	        }
 	        
 			log.info("***********************************************************************************************************");

@@ -1,5 +1,8 @@
 package Functions;
+
 import StepDefinitions.Hooks;
+import cucumber.api.Scenario;
+import io.qameta.allure.Allure;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -22,6 +25,12 @@ public class SeleniumFunctions {
 
     public SeleniumFunctions() {
         driver = Hooks.driver;
+    }
+
+    /******** Scenario Attributes ********/
+    Scenario scenario = null;
+    public void scenario (Scenario scenario) {
+        this.scenario = scenario;
     }
 
     public String readProperties(String property) throws IOException {
@@ -77,6 +86,15 @@ public class SeleniumFunctions {
         FileUtils.copyFile(scrFile, new File(String.format("%s.png", screenShotName)));
     }
 
+    public byte[] attachScreenShot(){
+
+        log.info("Attaching Screenshot");
+        byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+        Allure.addAttachment("Screenshot", String.valueOf(screenshot));
+        return screenshot;
+
+    }
+
     public static By getCompleteElement(String element) throws Exception {
         By result = null;
         JSONObject Entity = ReadEntity(element);
@@ -103,6 +121,5 @@ public class SeleniumFunctions {
         }
         return result;
     }
-
 
 }
