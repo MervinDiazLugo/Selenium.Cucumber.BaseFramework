@@ -7,8 +7,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.junit.Assert;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.*;
@@ -25,6 +28,8 @@ public class SeleniumFunctions {
     public SeleniumFunctions() {
         driver = Hooks.driver;
     }
+
+    public String ElementText = "";
 
     public static final int EXPLICIT_TIMEOUT = 5;
 
@@ -160,6 +165,148 @@ public class SeleniumFunctions {
             result = By.xpath(ValueToFind);
         }
         return result;
+    }
+
+    public void selectOptionDropdownByIndex(String element, int option) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        log.info(String.format("Waiting Element: %s", element));
+
+        Select opt = new Select(driver.findElement(SeleniumElement));
+        log.info("Select option: " + option + "by text");
+        opt.selectByIndex(option);
+    }
+
+    public void selectOptionDropdownByText(String element, String option) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        log.info(String.format("Waiting Element: %s", element));
+
+        Select opt = new Select(driver.findElement(SeleniumElement));
+        log.info("Select option: " + option + "by text");
+        opt.selectByVisibleText(option);
+    }
+
+    public void selectOptionDropdownByValue(String element, String option) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        log.info(String.format("Waiting Element: %s", element));
+
+        Select opt = new Select(driver.findElement(SeleniumElement));
+        log.info("Select option: " + option + "by text");
+        opt.selectByValue(option);
+    }
+
+    public void checkCheckbox(String element) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        boolean isChecked = driver.findElement(SeleniumElement).isSelected();
+        if(!isChecked){
+            log.info("Clicking on the checkbox to select: " + element);
+            driver.findElement(SeleniumElement).click();
+        }
+    }
+
+    public void UncheckCheckbox(String element) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        boolean isChecked = driver.findElement(SeleniumElement).isSelected();
+        if(isChecked){
+            log.info("Clicking on the checkbox to select: " + element);
+            driver.findElement(SeleniumElement).click();
+        }
+    }
+
+    public void scrollToElement(String element) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        JavascriptExecutor jse = (JavascriptExecutor)driver;
+        log.info("Scrolling to element: " + element);
+        jse.executeScript("arguments[0].scrollIntoView(true);", driver.findElement(SeleniumElement));
+
+    }
+
+    public void checkPartialTextElementNotPresent(String element,String text) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+        wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
+
+        log.info(String.format("Waiting Element: %s", element));
+        ElementText = driver.findElement(SeleniumElement).getText();
+
+        boolean isFoundFalse = ElementText.indexOf(text) !=-1? true: false;
+        Assert.assertFalse("Text is present in element: " + element, isFoundFalse);
+
+    }
+
+    public void checkPartialTextElementPresent(String element,String text) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+        wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
+        log.info(String.format("Esperando el elemento: %s", element));
+
+        ElementText = driver.findElement(SeleniumElement).getText();
+        boolean isFound = ElementText.indexOf(text) !=-1? true: false;
+
+        Assert.assertTrue("Text is not present in element: " + element, isFound);
+
+    }
+
+    public void iSetElementEmailWithTextMytext(String element, String text) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        driver.findElement(SeleniumElement).sendKeys(text);
+        log.info(String.format("Set on element %s with text %s", element, text));
+    }
+
+    public void doubleClick(String element) throws Exception
+    {
+        Actions action = new Actions(driver);
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        action.moveToElement(driver.findElement(SeleniumElement)).doubleClick().perform();
+        log.info("Double click on element: " + element);
+    }
+
+    public void iClicInElement(String element) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        driver.findElement(SeleniumElement).click();
+        log.info("Click on element by " + element);
+
+    }
+
+    public void scrollPage(String to) throws Exception
+    {
+        JavascriptExecutor jse = (JavascriptExecutor)driver;
+        if(to.equals("top")){
+            log.info("Scrolling to the top of the page");
+            jse.executeScript("scroll(0, -250);");
+
+        }
+        else if(to.equals("end")){
+            log.info("Scrolling to the end of the page");
+            jse.executeScript("scroll(0, 250);");
+        }
+    }
+
+    public void zoomTillElementDisplay(String element) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebElement html = driver.findElement(SeleniumElement);
+        html.sendKeys(Keys.chord(Keys.CONTROL, "0"));
+    }
+
+    public void switchToFrame(String Frame) throws Exception {
+
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(Frame);
+        log.info("Switching to frame: " + Frame);
+        driver.switchTo().frame(driver.findElement(SeleniumElement));
+
+    }
+
+    public void switchToParentFrame() {
+
+        log.info("Switching to parent frame");
+        driver.switchTo().parentFrame();
+
     }
 
 }
