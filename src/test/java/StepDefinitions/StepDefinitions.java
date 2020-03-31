@@ -13,16 +13,14 @@ import org.openqa.selenium.WebDriver;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class StepDefinitions {
+public class StepDefinitions{
     WebDriver driver;
     SeleniumFunctions functions = new SeleniumFunctions();
 
-    public static final int EXPLICIT_TIMEOUT = 5;
-
-    public String ElementText = "";
-
     /******** Log Attribute ********/
     Logger log = Logger.getLogger(StepDefinitions.class);
+
+
 
     public StepDefinitions() {
         driver = Hooks.driver;
@@ -33,6 +31,7 @@ public class StepDefinitions {
     public void scenario (Scenario scenario) {
         this.scenario = scenario;
     }
+
 
     @Given("^I am in App main site")
     public void iAmInAppMainSite() throws IOException {
@@ -76,9 +75,16 @@ public class StepDefinitions {
     }
 
     @And("^I set element (.*) with text (.*)")
-    public void iSetElementEmailWithTextMytext(String element, String text) throws Exception {
+    public void iSetElementWithText(String element, String text) throws Exception {
 
-        functions.iSetElementEmailWithTextMytext(element, text);
+        functions.iSetElementWithText(element, text);
+
+    }
+
+    @And("^I set (.*?) with key value (.*?)$")
+    public void iSetElementWithKeyValue(String element, String text) throws Exception {
+
+        functions.iSetElementWithKeyValue(element, text);
 
     }
 
@@ -233,7 +239,7 @@ public class StepDefinitions {
     }
 
     /** Zoom out until the element is displayed  */
-    @And("^I zoom out page till I see element having (.+) \"(.*?)\"$")
+    @And("^I zoom out page till I see element \"(.*?)\"$")
     public void zoomTillElementDisplay(String element) throws Exception
     {
         functions.zoomTillElementDisplay(element);
@@ -259,4 +265,68 @@ public class StepDefinitions {
 
         functions.switchToParentFrame();
     }
+
+    /** I click in JS element. */
+    @And("^I click in JS element (.+)$")
+    public void ClickJSElement(String element) throws Exception
+    {
+        functions.ClickJSElement(element);
+    }
+
+    /** Navigate forward */
+    @And("^I navigate forward")
+    public void navigateForward()
+    {
+        log.info("Navigate forward");
+        driver.navigate().forward();
+    }
+
+    /** Navigate backward */
+    @And("^I navigate back")
+    public void navigateBack()
+    {
+        log.info("Navigate backward");
+        driver.navigate().back();
+    }
+
+
+    /** Close the driver instance */
+    @And("^I close browser$")
+    public void close()
+    {
+        log.info("Closing browsers");
+        driver.close();
+    }
+
+
+    /** Wait for an element to be present for a specific period of time */
+    @Then("^I wait for element (.*) to be present$")
+    public void waitForElementPresent(String element) throws Exception
+    {
+        functions.waitForElementPresent(element);
+    }
+
+    /** Wait for an element to be visible for a specific period of time */
+    @Then("^I wait element (.*?) to be visible$")
+    public void waitForElementVisible(String element) throws Exception
+    {
+        functions.waitForElementVisible(element);
+    }
+
+
+    @Then("^Save as Scenario Context key (.*?) with value (.*?)$")
+    public void SaveInScenarioData(String key,String text) throws NoSuchFieldException {
+
+        functions.SaveInScenario(key, text);
+
+    }
+
+    @And("^I Save text of (.*?) as Scenario Context$")
+    public void iSaveTextOfElementAsScenarioContext(String element) throws Exception {
+
+        String ScenarioElementText = functions.GetTextElement(element);
+        functions.SaveInScenario(element+".text", ScenarioElementText);
+
+    }
+
 }

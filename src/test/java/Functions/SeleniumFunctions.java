@@ -17,6 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 
@@ -24,6 +26,7 @@ public class SeleniumFunctions {
     static WebDriver driver;
     public static Properties prop = new Properties();
     public static InputStream in = SeleniumFunctions.class.getResourceAsStream("../test.properties");
+    public static Map<String, String> ScenaryData = new HashMap<>();
 
     public SeleniumFunctions() {
         driver = Hooks.driver;
@@ -157,7 +160,7 @@ public class SeleniumFunctions {
             result = By.linkText(ValueToFind);
         } else if ("name".equalsIgnoreCase(GetFieldBy)) {
             result = By.name(ValueToFind);
-        } else if ("partialLinkText".equalsIgnoreCase(GetFieldBy)) {
+        } else if ("link".equalsIgnoreCase(GetFieldBy)) {
             result = By.partialLinkText(ValueToFind);
         } else if ("tagName".equalsIgnoreCase(GetFieldBy)) {
             result = By.tagName(ValueToFind);
@@ -222,40 +225,68 @@ public class SeleniumFunctions {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
         JavascriptExecutor jse = (JavascriptExecutor)driver;
         log.info("Scrolling to element: " + element);
-        jse.executeScript("arguments[0].scrollIntoView(true);", driver.findElement(SeleniumElement));
+        jse.executeScript("arguments[0].scrollIntoView();", driver.findElement(SeleniumElement));
 
     }
 
-    public void checkPartialTextElementNotPresent(String element,String text) throws Exception {
+    public void ClickJSElement(String element) throws Exception
+    {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
-        WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
-        wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
+        JavascriptExecutor jse = (JavascriptExecutor)driver;
+        log.info("Scrolling to element: " + element);
+        jse.executeScript("arguments[0].click()", driver.findElement(SeleniumElement));
 
-        log.info(String.format("Waiting Element: %s", element));
-        ElementText = driver.findElement(SeleniumElement).getText();
+    }
+
+
+    public void checkPartialTextElementNotPresent(String element,String text) throws Exception {
+        ElementText = GetTextElement(element);
 
         boolean isFoundFalse = ElementText.indexOf(text) !=-1? true: false;
-        Assert.assertFalse("Text is present in element: " + element, isFoundFalse);
+        Assert.assertFalse("Text is present in element: " + element + " current text is: " + ElementText, isFoundFalse);
 
     }
 
     public void checkPartialTextElementPresent(String element,String text) throws Exception {
+
+        ElementText = GetTextElement(element);
+
+        boolean isFound = ElementText.indexOf(text) !=-1? true: false;
+
+        Assert.assertTrue("Text is not present in element: " + element + " current text is: " + ElementText, isFound);
+
+    }
+
+    public String GetTextElement(String element) throws Exception {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
         WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
         wait.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
         log.info(String.format("Esperando el elemento: %s", element));
 
         ElementText = driver.findElement(SeleniumElement).getText();
-        boolean isFound = ElementText.indexOf(text) !=-1? true: false;
 
-        Assert.assertTrue("Text is not present in element: " + element, isFound);
+        return ElementText;
 
     }
 
-    public void iSetElementEmailWithTextMytext(String element, String text) throws Exception {
+    public void iSetElementWithText(String element, String text) throws Exception {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
         driver.findElement(SeleniumElement).sendKeys(text);
         log.info(String.format("Set on element %s with text %s", element, text));
+    }
+
+    public void iSetElementWithKeyValue(String element, String key) throws Exception {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        boolean exist = this.ScenaryData.containsKey(key);
+        if (exist){
+            String text = this.ScenaryData.get(key);
+            driver.findElement(SeleniumElement).sendKeys(text);
+            log.info(String.format("Set on element %s with text %s", element, text));
+        }else{
+            Assert.assertTrue(String.format("The given key %s do not exist in Context", key), this.ScenaryData.containsKey(key));
+        }
+
+
     }
 
     public void doubleClick(String element) throws Exception
@@ -306,6 +337,34 @@ public class SeleniumFunctions {
 
         log.info("Switching to parent frame");
         driver.switchTo().parentFrame();
+
+    }
+
+    public void waitForElementPresent(String element) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebDriverWait w = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+        log.info("Waiting for the element: "+element + " to be present");
+        w.until(ExpectedConditions.presenceOfElementLocated(SeleniumElement));
+    }
+
+    public void waitForElementVisible(String element) throws Exception
+    {
+        By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
+        WebDriverWait w = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
+        log.info("Waiting for the element: "+element+ " to be visible");
+        w.until(ExpectedConditions.visibilityOfElementLocated(SeleniumElement));
+    }
+
+    public void SaveInScenario(String key, String text) {
+
+        if (!this.ScenaryData.containsKey(key)) {
+            this.ScenaryData.put(key,text);
+            log.info(String.format("Save as Scenario Context key: %s with value: %s ", key,text));
+        } else {
+            this.ScenaryData.replace(key,text);
+            log.info(String.format("Update Scenario Context key: %s with value: %s ", key,text));
+        }
 
     }
 

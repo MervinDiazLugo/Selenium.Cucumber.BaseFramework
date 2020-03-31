@@ -66,3 +66,29 @@ Feature: Examples
       Then I switch to Frame: Frame3
       And I check the checkbox having Frame3 input
       Then I take screenshot: Feature_Various
+
+  @test
+  Scenario: Clic in JS elements
+    Given I navigate to https://www.amazon.es/
+    Then I load the DOM Information Amazon.json
+    And I click in JS element Sobre Amazon
+    Then I take screenshot: Feature_Various
+
+
+  @test
+  Scenario: Scroll to
+    Given I navigate to https://www.amazon.es/
+    Then I load the DOM Information Amazon.json
+    And I scroll to element Sobre Amazon
+    Then I take screenshot: Feature_Various
+    #And I scroll to top of page
+
+  @test
+  Scenario: wait elements
+    Given I navigate to https://www.amazon.es/
+    Then I load the DOM Information Amazon.json
+    And I wait for element Sobre Amazon to be present
+    #And I wait element Sobre Amazon to be visible
+    Then I take screenshot: Feature_Various
+    #And I scroll to top of page
+
