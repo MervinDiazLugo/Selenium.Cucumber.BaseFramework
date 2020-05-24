@@ -39,6 +39,7 @@ public class StepDefinitions{
         String url = functions.readProperties("MainAppUrlBase");
         log.info("Navigate to: " + url);
         driver.get(url);
+        functions.HandleMyWindows.put("Principal", driver.getWindowHandle());
     }
 
     @Given("^I navigate to (.*)")
@@ -47,6 +48,12 @@ public class StepDefinitions{
         log.info("Navigate to: " + url);
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        functions.HandleMyWindows.put("Principal", driver.getWindowHandle());
+    }
+
+    @Given("^I open new tab with URL (.*)")
+    public void OpenNewTabWithURL(String url){
+        functions.OpenNewTabWithURL(url);
     }
 
     @Then("^I maximize the windows")
@@ -61,7 +68,7 @@ public class StepDefinitions{
         log.info("initialize file: " + file );
     }
 
-    @And("^I clic in element (.*)")
+    @And("^I click in element (.*)")
     public void iClicInElement(String element) throws Exception {
 
         functions.iClicInElement(element);
@@ -198,10 +205,19 @@ public class StepDefinitions{
     @When("^I switch to new window$")
     public void switchNewWindow()
     {
+        System.out.println(driver.getWindowHandles());
         for(String winHandle : driver.getWindowHandles()){
+            System.out.println(winHandle);
             log.info("Switching to new windows");
             driver.switchTo().window(winHandle);
         }
+    }
+
+    /** Switch to a new windows */
+    @When("^I go to (.*?) window$")
+    public void switchNewNamedWindow(String WindowsName)
+    {
+        functions.WindowsHandle(WindowsName);
     }
 
     /** Switch to the previous windows */
@@ -329,4 +345,8 @@ public class StepDefinitions{
 
     }
 
+    @Given("I set (.*) value in Data Scenario")
+    public void iSetEmailValueInDataScenario(String DataScenario) throws IOException {
+        functions.RetriveTestData(DataScenario);
+    }
 }

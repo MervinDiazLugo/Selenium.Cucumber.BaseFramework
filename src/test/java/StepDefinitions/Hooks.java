@@ -11,30 +11,25 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 public class Hooks {
 	
 		public static WebDriver driver;
 		Logger log = Logger.getLogger(Hooks.class);
 		Scenario scenario = null;
-
+		/**
 		@Before
-		public void before(Scenario scenario) {
+		public void before() {
 			this.scenario = scenario;
 		}
-
+	 	*/
 		@Before
-	    /**
-	     * Delete all cookies at the start of each scenario to avoid
-	     * shared state between tests
-	     */
-	    public void initDriver() throws MalformedURLException {
+	    public void initDriver(Scenario scenario) throws IOException {
 			log.info("***********************************************************************************************************");
 			log.info("[ Configuration ] - Initializing driver configuration");
 			log.info("***********************************************************************************************************");
 	    	driver = CreateDriver.initConfig();
-	    	
+			this.scenario = scenario;
 	    	log.info("***********************************************************************************************************");
 			log.info("[ Scenario ] - "+ scenario.getName());
 			log.info("***********************************************************************************************************");
@@ -52,7 +47,6 @@ public class Hooks {
 		        	scenario.write("Current Page URL is " + driver.getCurrentUrl());
 		            byte[] screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES);
 		            scenario.embed(screenshot, "src/test/resources/Data/Screenshots/Failed");
-					//functions.ScreenShot(scenario.getName());
 		        } catch (WebDriverException somePlatformsDontSupportScreenshots) {
 		            System.err.println(somePlatformsDontSupportScreenshots.getMessage());
 		        }

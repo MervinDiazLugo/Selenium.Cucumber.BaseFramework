@@ -10,13 +10,13 @@
   },
 
     "Frame2 Select": {
-    "GetFieldBy": "Xpath",
-    "ValueToFind": "//select[@id='animals']"
+    "GetFieldBy": "id",
+    "ValueToFind": "animals"
   },
 
   "Frame1": {
-    "GetFieldBy": "Xpath",
-    "ValueToFind": "//iframe[@id='frame1']"
+    "GetFieldBy": "id",
+    "ValueToFind": "frame1"
   },
 
   "Frame1 input": {

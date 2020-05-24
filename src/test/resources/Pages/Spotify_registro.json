@@ -4,6 +4,7 @@
     "ValueToFind": "//a[@class='spotify-logo']"
   },
 
+
   "Titulo": {
     "GetFieldBy": "Xpath",
     "ValueToFind": "//h2[contains(@class,'center hdr-l')]"
@@ -47,6 +48,8 @@
   "text":{
     "GetFieldBy": "xpath",
     "ValueToFind": "//*[contains(text(), '{0}')]"
-  }
+  },
+
+
 
 }

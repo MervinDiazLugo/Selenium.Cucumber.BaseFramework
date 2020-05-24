@@ -6,15 +6,24 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 
 public class WebDriverFactory {
-	static String resourceFolder="src/test/java/Software/";
+
+	private static Properties prop = new Properties();
+	private static InputStream in = CreateDriver.class.getResourceAsStream("../test.properties");
+	private static String resourceFolder;
+
     /******** Log Attribute ********/
     private static Logger log = Logger.getLogger(WebDriverFactory.class);
     
 	private static WebDriverFactory instance = null;
 	    
-    private WebDriverFactory() {    
+    private WebDriverFactory() {
+
     }
     
     /**
@@ -29,16 +38,17 @@ public class WebDriverFactory {
     }    
 	
 		
-	 public static WebDriver createNewWebDriver(String browser, String os){
+	 public static WebDriver createNewWebDriver(String browser, String os) throws IOException {
 		 WebDriver driver;
+		 prop.load(in);
+		 resourceFolder = prop.getProperty("resourceFolder");
 
-		 /******** The driver selected is Local: Firefox  ********/    	
 		 if ("FIREFOX".equalsIgnoreCase(browser)) {
 			 if("WINDOWS".equalsIgnoreCase(os)){
-				 System.setProperty("webdriver.gecko.driver", resourceFolder+os+"/geckodriver.exe");    
+				 System.setProperty("webdriver.gecko.driver", resourceFolder + os + "/geckodriver.exe");
 			 }
 			 else{
-				 System.setProperty("webdriver.gecko.driver", resourceFolder+os+"/geckodriver");    
+				 System.setProperty("webdriver.gecko.driver", resourceFolder + os + "/geckodriver");
 			 }
 		     driver = new FirefoxDriver();
 		 }

@@ -1,11 +1,14 @@
 Feature: Examples
   Optional description of the feature
 
+  Background:
+    Given I set UserEmail value in Data Scenario
+
  @test
   Scenario: Get Sites
     Given I am in App main site
     Then I load the DOM Information Spotify_registro.json
-    And I clic in element Email
+    And I click in element Email
     And I set element Email with text mervindiazlugo@gmail.com
     Then I take screenshot: Feature_0001
 
@@ -13,34 +16,35 @@ Feature: Examples
   Scenario: Assert contain text
     Given I am in App main site
     Then I load the DOM Information Spotify_registro.json
-    And I clic in element Email
+    And I click in element Email
     And I set element Email with text mervindiazlugo@gmail.com
-    And I clic in element Email Confirmacion
+    And I click in element Email Confirmacion
     Then Assert if Email Error contains text Lo sentimos, este correo ya está registrado.
 
   @test
   Scenario: Assert not contain text
     Given I am in App main site
     Then I load the DOM Information Spotify_registro.json
-    And I clic in element Email
+    And I click in element Email
     And I set element Email with text mervindiazlugo@gmail.com
-    And I clic in element Email Confirmacion
+    And I click in element Email Confirmacion
     Then Check if Email Error NOT contains text COVID-19
 
   @test
   Scenario: Take a ScreenShot
     Given I am in App main site
     And I attach a Screenshot to Report
+    And I take screenshot: HolyScreen
 
 
   @test
   Scenario: Elements is/is not present
     Given I am in App main site
     Then I load the DOM Information Spotify_registro.json
-    And I clic in element Email
+    And I click in element Email
     Then Check if Email Error NOT is Displayed
     And I set element Email with text mervindiazlugo@gmail.com
-    And I clic in element Email Confirmacion
+    And I click in element Email Confirmacion
     Then Assert if Email Error is Displayed
 
 
@@ -92,3 +96,14 @@ Feature: Examples
     Then I take screenshot: Feature_Various
     #And I scroll to top of page
 
+  @test
+  Scenario: Open New Tab
+    Given I navigate to https://www.amazon.es/
+    And I open new tab with URL https://chercher.tech/practice/frames-example-selenium-webdriver
+    Then I switch to new window
+    Then I load the DOM Information frames.json
+    And I switch to Frame: Frame2
+    And I set text Avatar in dropdown Frame2 Select
+    When I go to Principal window
+    Then I load the DOM Information Amazon.json
+    And I wait for element Sobre Amazon to be present

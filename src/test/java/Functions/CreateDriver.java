@@ -13,39 +13,39 @@ public class CreateDriver {
     private static String browser;
     private static String os;
     private static String logLevel;
-    private static String properties = "test.properties";
+
     private static Properties prop = new Properties();
     private static InputStream in = CreateDriver.class.getResourceAsStream("../test.properties");
     private static CreateDriver instance = null;
-  
+
     /******** Log Attribute ********/
     private static Logger log = Logger.getLogger(CreateDriver.class);
     
     /******** Initialize Driver Configuration when the class is instanced ********/
-    private CreateDriver() {
+    private CreateDriver() throws IOException {
     	CreateDriver.initConfig();
     }
-    
+
     /**
      * Singleton pattern
      * @return a single instance
-     */
-    public static CreateDriver getInstance() {
+
+    public static CreateDriver getInstance() throws IOException {
         if (instance == null) {
             instance = new CreateDriver();
         }
         return instance;
-    }    
+    }
 
     /**
      * Get the Browser from the POM
      */
-     public static WebDriver initConfig(){    	 
+     public static WebDriver initConfig() throws IOException {
     	WebDriver driver; 
     	
         try {
         	log.info("***********************************************************************************************************");
-        	log.info("[ POM Configuration ] - Read the basic properties configuration from: " + properties);
+        	log.info("[ POM Configuration ] - Read the basic properties configuration from: ../test.properties");
             prop.load(in);
             browser = prop.getProperty("browser");
             os = prop.getProperty("os");

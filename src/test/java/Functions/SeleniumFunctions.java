@@ -11,9 +11,8 @@ import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.openqa.selenium.support.ui.Select;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
@@ -21,20 +20,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-
 public class SeleniumFunctions {
     static WebDriver driver;
     public static Properties prop = new Properties();
     public static InputStream in = SeleniumFunctions.class.getResourceAsStream("../test.properties");
     public static Map<String, String> ScenaryData = new HashMap<>();
+    public static Map<String, String> HandleMyWindows = new HashMap<>();
 
-    public SeleniumFunctions() {
+    public SeleniumFunctions(){
         driver = Hooks.driver;
     }
+
+    public static String Environment = "";
 
     public String ElementText = "";
 
     public static final int EXPLICIT_TIMEOUT = 5;
+    public static boolean isDisplayed = Boolean.parseBoolean(null);
 
     /******** Scenario Attributes ********/
     Scenario scenario = null;
@@ -49,6 +51,8 @@ public class SeleniumFunctions {
 
     /******** Log Attribute ********/
     private static Logger log = Logger.getLogger(SeleniumFunctions.class);
+
+    /******** Page Path ********/
     public static String FileName = "";
     public static String PagesFilePath = "src/test/resources/Pages/";
 
@@ -65,14 +69,9 @@ public class SeleniumFunctions {
             } else {
                 return null;
             }
-        } catch (FileNotFoundException e) {
-            log.error("ReadEntity: No existe el archivo " + FileName);
-            return null;
-        } catch (NullPointerException e) {
-
+        } catch (FileNotFoundException | NullPointerException e) {
             log.error("ReadEntity: No existe el archivo " + FileName);
             throw new IllegalStateException("ReadEntity: No existe el archivo " + FileName, e);
-
         }
 
     }
@@ -85,6 +84,43 @@ public class SeleniumFunctions {
         log.info(Entity.toJSONString());
         return Entity;
 
+    }
+
+    public static By getCompleteElement(String element) throws Exception {
+        By result = null;
+        JSONObject Entity = ReadEntity(element);
+
+        GetFieldBy = (String) Entity.get("GetFieldBy");
+        ValueToFind = (String) Entity.get("ValueToFind");
+
+        if ("className".equalsIgnoreCase(GetFieldBy)) {
+            result = By.className(ValueToFind);
+        } else if ("cssSelector".equalsIgnoreCase(GetFieldBy)) {
+            result = By.cssSelector(ValueToFind);
+        } else if ("id".equalsIgnoreCase(GetFieldBy)) {
+            result = By.id(ValueToFind);
+        } else if ("linkText".equalsIgnoreCase(GetFieldBy)) {
+            result = By.linkText(ValueToFind);
+        } else if ("name".equalsIgnoreCase(GetFieldBy)) {
+            result = By.name(ValueToFind);
+        } else if ("link".equalsIgnoreCase(GetFieldBy)) {
+            result = By.partialLinkText(ValueToFind);
+        } else if ("tagName".equalsIgnoreCase(GetFieldBy)) {
+            result = By.tagName(ValueToFind);
+        } else if ("xpath".equalsIgnoreCase(GetFieldBy)) {
+            result = By.xpath(ValueToFind);
+        }
+        return result;
+    }
+
+    public void RetriveTestData(String parameter) throws IOException {
+        Environment = readProperties("Environment");
+        try {
+            SaveInScenario(parameter, readProperties(parameter+"."+Environment));
+            System.out.println(this.ScenaryData.get(parameter));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void ScreenShot(String TestCaptura) throws IOException {
@@ -105,7 +141,7 @@ public class SeleniumFunctions {
     }
 
     public boolean isElementDisplayed(String element) throws Exception {
-        boolean isDisplayed = Boolean.parseBoolean(null);
+
         try {
             By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
             log.info(String.format("Waiting Element: %s", element));
@@ -141,33 +177,6 @@ public class SeleniumFunctions {
         }catch(Throwable e){
             log.error("Error came while waiting for the alert popup. "+e.getMessage());
         }
-    }
-
-    public static By getCompleteElement(String element) throws Exception {
-        By result = null;
-        JSONObject Entity = ReadEntity(element);
-
-        GetFieldBy = (String) Entity.get("GetFieldBy");
-        ValueToFind = (String) Entity.get("ValueToFind");
-
-        if ("className".equalsIgnoreCase(GetFieldBy)) {
-            result = By.className(ValueToFind);
-        } else if ("cssSelector".equalsIgnoreCase(GetFieldBy)) {
-            result = By.cssSelector(ValueToFind);
-        } else if ("id".equalsIgnoreCase(GetFieldBy)) {
-            result = By.id(ValueToFind);
-        } else if ("linkText".equalsIgnoreCase(GetFieldBy)) {
-            result = By.linkText(ValueToFind);
-        } else if ("name".equalsIgnoreCase(GetFieldBy)) {
-            result = By.name(ValueToFind);
-        } else if ("link".equalsIgnoreCase(GetFieldBy)) {
-            result = By.partialLinkText(ValueToFind);
-        } else if ("tagName".equalsIgnoreCase(GetFieldBy)) {
-            result = By.tagName(ValueToFind);
-        } else if ("xpath".equalsIgnoreCase(GetFieldBy)) {
-            result = By.xpath(ValueToFind);
-        }
-        return result;
     }
 
     public void selectOptionDropdownByIndex(String element, int option) throws Exception
@@ -238,6 +247,15 @@ public class SeleniumFunctions {
 
     }
 
+    public void OpenNewTabWithURL(String URL)
+    {
+        log.info("Open New tab with URL: " + URL);
+        System.out.println("Open New tab with URL: " + URL);
+        JavascriptExecutor jse = (JavascriptExecutor)driver;
+        jse.executeScript(String.format("window.open('%s','_blank');", URL));
+
+    }
+
 
     public void checkPartialTextElementNotPresent(String element,String text) throws Exception {
         ElementText = GetTextElement(element);
@@ -285,7 +303,6 @@ public class SeleniumFunctions {
         }else{
             Assert.assertTrue(String.format("The given key %s do not exist in Context", key), this.ScenaryData.containsKey(key));
         }
-
 
     }
 
@@ -354,6 +371,29 @@ public class SeleniumFunctions {
         WebDriverWait w = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
         log.info("Waiting for the element: "+element+ " to be visible");
         w.until(ExpectedConditions.visibilityOfElementLocated(SeleniumElement));
+    }
+
+    public void page_has_loaded (){
+        String GetActual = driver.getCurrentUrl();
+        System.out.println(String.format("Checking if %s page is loaded.", GetActual));
+        log.info(String.format("Checking if %s page is loaded.", GetActual));
+        new WebDriverWait(driver, EXPLICIT_TIMEOUT).until(
+                webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
+    }
+
+    public void WindowsHandle(String WindowsName){
+        if (this.HandleMyWindows.containsKey(WindowsName)) {
+            driver.switchTo().window(this.HandleMyWindows.get(WindowsName));
+            log.info(String.format("I go to Windows: %s with value: %s ", WindowsName ,this.HandleMyWindows.get(WindowsName)));
+        } else {
+            for(String winHandle : driver.getWindowHandles()){
+                this.HandleMyWindows.put(WindowsName,winHandle);
+                System.out.println("The New window"+ WindowsName + "is saved in scenario with value" + this.HandleMyWindows.get(WindowsName));
+                log.info("The New window"+ WindowsName + "is saved in scenario with value" + this.HandleMyWindows.get(WindowsName));
+                driver.switchTo().window(winHandle);
+            }
+
+        }
     }
 
     public void SaveInScenario(String key, String text) {
