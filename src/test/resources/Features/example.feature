@@ -20,6 +20,7 @@ Feature: Examples
     And I set element Email with text mervindiazlugo@gmail.com
     And I click in element Email Confirmacion
     Then Assert if Email Error contains text Lo sentimos, este correo ya está registrado.
+    Then Assert if Email Error is equal to Lo sentimos, este correo ya está registrado.
 
   @test
   Scenario: Assert not contain text
@@ -42,7 +43,7 @@ Feature: Examples
     Given I am in App main site
     Then I load the DOM Information Spotify_registro.json
     And I click in element Email
-    Then Check if Email Error NOT is Displayed
+    Then Check if Email Error is NOT Displayed
     And I set element Email with text mervindiazlugo@gmail.com
     And I click in element Email Confirmacion
     Then Assert if Email Error is Displayed
@@ -85,16 +86,16 @@ Feature: Examples
     Then I load the DOM Information Amazon.json
     And I scroll to element Sobre Amazon
     Then I take screenshot: Feature_Various
-    #And I scroll to top of page
+    And I scroll to top of page
 
   @test
   Scenario: wait elements
     Given I navigate to https://www.amazon.es/
     Then I load the DOM Information Amazon.json
     And I wait for element Sobre Amazon to be present
-    #And I wait element Sobre Amazon to be visible
+    And I wait element Sobre Amazon to be visible
     Then I take screenshot: Feature_Various
-    #And I scroll to top of page
+    And I scroll to top of page
 
   @test
   Scenario: Open New Tab
@@ -107,3 +108,13 @@ Feature: Examples
     When I go to Principal window
     Then I load the DOM Information Amazon.json
     And I wait for element Sobre Amazon to be present
+
+
+  @test
+  Scenario: Handle Alerts
+    Given I navigate to https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_alert
+    Then I load the DOM Information frames.json
+    And I switch to Frame: Frame4 Alerta
+    And I click in element Alert
+    And I wait 8 seconds
+    Then I accept alert

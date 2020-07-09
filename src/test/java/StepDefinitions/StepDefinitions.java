@@ -40,6 +40,8 @@ public class StepDefinitions{
         log.info("Navigate to: " + url);
         driver.get(url);
         functions.HandleMyWindows.put("Principal", driver.getWindowHandle());
+        functions.page_has_loaded();
+
     }
 
     @Given("^I navigate to (.*)")
@@ -49,6 +51,7 @@ public class StepDefinitions{
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         functions.HandleMyWindows.put("Principal", driver.getWindowHandle());
+        functions.page_has_loaded();
     }
 
     @Given("^I open new tab with URL (.*)")
@@ -73,6 +76,13 @@ public class StepDefinitions{
 
         functions.iClicInElement(element);
 
+    }
+
+    /** I click in JS element. */
+    @And("^I click in JS element (.+)$")
+    public void ClickJSElement(String element) throws Exception
+    {
+        functions.ClickJSElement(element);
     }
 
     @And("^I double click on element having (.*)")
@@ -135,21 +145,21 @@ public class StepDefinitions{
     }
 
     /** Assert if element is present*/
-    @Then("^Check if (.*?) NOT is Displayed$")
+    @Then("^Check if (.*?) is NOT Displayed$")
     public void checkIfElementIsNotPresent(String element) throws Exception {
 
         boolean isDisplayed = functions.isElementDisplayed(element);
         Assert.assertFalse("Element is present: " + element, isDisplayed);
     }
 
-    /** Handle and accept a JavaScript alert */
+    /** Handle and accept a alert */
     @Then("^I accept alert$")
     public void AcceptAlert()
     {
         functions.AcceptAlert();
     }
 
-    /** Handle and dismiss a JavaScript alert */
+    /** Handle and dismiss a alert */
     @Then("^I dismiss alert$")
     public void dismissAlert()
     {
@@ -282,12 +292,6 @@ public class StepDefinitions{
         functions.switchToParentFrame();
     }
 
-    /** I click in JS element. */
-    @And("^I click in JS element (.+)$")
-    public void ClickJSElement(String element) throws Exception
-    {
-        functions.ClickJSElement(element);
-    }
 
     /** Navigate forward */
     @And("^I navigate forward")
@@ -348,5 +352,18 @@ public class StepDefinitions{
     @Given("I set (.*) value in Data Scenario")
     public void iSetEmailValueInDataScenario(String DataScenario) throws IOException {
         functions.RetriveTestData(DataScenario);
+    }
+
+    @And("I wait (.*) seconds")
+    public void iWaitSeconds(int seconds) throws InterruptedException {
+        int secs = seconds * 1000;
+        Thread.sleep(secs);
+    }
+
+    @Then("Assert if (.*) is equal to (.*)")
+    public void assertIfEqualTo(String element, String text) throws Exception {
+
+        functions.checkTextElementEqualTo(element, text);
+
     }
 }

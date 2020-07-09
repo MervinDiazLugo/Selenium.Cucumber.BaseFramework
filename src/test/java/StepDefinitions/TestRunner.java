@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "classpath:Features",
         glue = "classpath:StepDefinitions"
-                //"classpath:Features"
+        //tags = "Security,frames"
 )
 
 public class TestRunner {

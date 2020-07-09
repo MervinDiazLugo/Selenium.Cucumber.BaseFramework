@@ -275,6 +275,14 @@ public class SeleniumFunctions {
 
     }
 
+    public void checkTextElementEqualTo(String element,String text) throws Exception {
+
+        ElementText = GetTextElement(element);
+
+        Assert.assertEquals("Text is not present in element: " + element + " current text is: " + ElementText, text, ElementText);
+
+    }
+
     public String GetTextElement(String element) throws Exception {
         By SeleniumElement = SeleniumFunctions.getCompleteElement(element);
         WebDriverWait wait = new WebDriverWait(driver, EXPLICIT_TIMEOUT);
