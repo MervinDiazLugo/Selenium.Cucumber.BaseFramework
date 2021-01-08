@@ -19,8 +19,8 @@ Feature: Examples
     And I click in element Email
     And I set element Email with text mervindiazlugo@gmail.com
     And I click in element Email Confirmacion
-    Then Assert if Email Error contains text Lo sentimos, este correo ya está registrado.
-    Then Assert if Email Error is equal to Lo sentimos, este correo ya está registrado.
+    Then Assert if Email Error contains text Este correo electrónico ya está conectado a una cuenta.
+    Then Assert if Email Error is equal to Este correo electrónico ya está conectado a una cuenta. Inicia sesión.
 
   @test
   Scenario: Assert not contain text

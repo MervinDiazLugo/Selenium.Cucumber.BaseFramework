@@ -16,13 +16,13 @@
   },
 
   "Email": {
-    "GetFieldBy": "Xpath",
-    "ValueToFind": "//input[@name='signup_form[email]']"
+    "GetFieldBy": "id",
+    "ValueToFind": "email"
   },
 
   "Email Confirmacion": {
-    "GetFieldBy": "Xpath",
-    "ValueToFind": "//input[@name='signup_form[confirm_email]']"
+    "GetFieldBy": "id",
+    "ValueToFind": "confirm"
   },
 
   "Pass": {
@@ -42,7 +42,7 @@
 
   "Email Error": {
     "GetFieldBy": "xpath",
-    "ValueToFind": "//label[@class='has-error']"
+    "ValueToFind": "/html[1]/body[1]/div[1]/main[1]/div[2]/form[1]/div[1]/div[2]/span[1]"
   },
 
   "text":{

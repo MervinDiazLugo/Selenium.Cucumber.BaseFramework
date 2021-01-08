@@ -9,10 +9,8 @@ Feature: exampleScenaryKeys
     And I click in element Email
     And I set element Email with text mervindiazlugo@gmail.com
     And I click in element Email Confirmacion
-    Then Assert if Email Error contains text Lo sentimos, este correo ya está registrado.
-    And I scroll to element Already
-    And I Save text of Already as Scenario Context
-    Then Save as Scenario Context key MiVariable with value MiValor
+    Then Assert if Email Error contains text Este correo electrónico ya está conectado a una cuenta. Inicia sesión.
+
 
 
   @test
